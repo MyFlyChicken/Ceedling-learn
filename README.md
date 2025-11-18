@@ -6,7 +6,7 @@
 
 ## 简介
 
-Ceedling 是一个为C语言构建和测试的自动化工具。它集成了 Unity (单元测试框架)、CMock (Mocking框架) 和 CException (异常处理框架)。本项目旨在演示如何使用 Ceedling 搭建一个基本的C语言单元测试环境。
+Ceedling 是一个为C语言构建和测试的自动化工具。它集成了 Unity (单元测试框架)、CMock ([Mocking框架](https://cmocka.org/talks/cmocka_unit_testing_and_mocking.pdf)) 和 CException (异常处理框架)。本项目旨在演示如何使用 Ceedling 搭建一个基本的C语言单元测试环境。
 
 ## 环境准备
 
