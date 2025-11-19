@@ -1,4 +1,5 @@
 
+#include <stdint.h>
 #ifdef TEST
 
 #include "unity.h"
@@ -11,6 +12,14 @@ void setUp(void) { /*!< 测试环境初始化 */
 }
 
 void tearDown(void) { /*!< 测试环境去初始化 */
+}
+
+static int _bsp_i2c_read_callback(uint8_t dev_addr, uint8_t reg_addr,
+                                  uint8_t *data, uint16_t len,
+                                  int cmock_num_calls) {
+  printf("dev_addr:%d, reg_addr:%d, len:%d, cmock_num_calls:%d\n", dev_addr,
+         reg_addr, len, cmock_num_calls);
+  return 0; // 返回成功
 }
 
 void test_sensor_init(void) {
@@ -95,6 +104,29 @@ void test_sensor_read_data_content(void) {
   ret = sensor_read_data(0x60, 0x02, read_buffer, 5);
   TEST_ASSERT_EQUAL(0, ret);
   TEST_ASSERT_EQUAL_UINT8_ARRAY(expected_buffer2, read_buffer, 5);
+}
+
+void test_sensor_read_data_callback(void) {
+  int ret = 0;
+  uint8_t read_buffer[5] = {0};
+  uint8_t expected_buffer[5] = {11, 22, 33, 44, 55};
+
+  /* 使用回调函数实现对data指向内存的赋值 */
+  /* 构建对象 */
+  bsp_i2c_read_ExpectAndReturn(0x60, 0x03, read_buffer, 5, 0);
+  /* 检查输入参数后再调用回调函数 */
+  bsp_i2c_read_AddCallback(_bsp_i2c_read_callback);
+
+  ret = sensor_read_data(0x60, 0x03, read_buffer, 5);
+  TEST_ASSERT_EQUAL(0, ret);
+
+  /* 构建对象 */
+  bsp_i2c_read_ExpectAndReturn(0x60, 0x04, read_buffer, 5, 0);
+  /* 不检查输入参数，直接调用回调函数 */
+  bsp_i2c_read_Stub(_bsp_i2c_read_callback);
+
+  ret = sensor_read_data(0x60, 0x04, read_buffer, 5);
+  TEST_ASSERT_EQUAL(0, ret);
 }
 
 #endif // TEST
